@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-for-test-connect-d
+  labels:
+    app:      app-for-test-connect
+    name:     app-for-test-connect-d
+spec:
+  selector:
+    matchLabels:
+      app: app-for-test-connect
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:      app-for-test-connect
+        name:     app-for-test-connect-p
+    spec:
+      containers:
+
+        - name: app-for-test-connect
+          image: registry.ca.sbrf.ru/pprb-dev/ci01006896/ci01006898_tcpf_dev/app-for-test-connect:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          env:
+            - name: spring.config.location
+              value: /app/resources/application.properties
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe: # проверка, когда контейнер готов принимать прафик
+            httpGet:
+              path: /getStatus
+              port: 8080
+            initialDelaySeconds: 30 # задержка до начала проверки
+            timeoutSeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3 # количество попыток
+          livenessProbe: # проверка, когда необходимо перезапустить контейнер
+            httpGet:
+              path: /getDual
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3 # количество попыток
+          ports:
+            - name: connect-http
+              containerPort: 8080
+              protocol: TCP
+

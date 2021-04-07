@@ -1,0 +1,8 @@
+apiVersion: v2
+name: app-for-test-connect-db
+version: 0.0.1
+description: Test helm_chart for devlop TCK
+type: application
+home: https://confluence.ca.sbrf.ru/pages/viewpage.action?pageId=4286514529
+sources:
+- https://stash.delta.sbrf.ru/scm/way4/devops_for_pprb_tcpf.git

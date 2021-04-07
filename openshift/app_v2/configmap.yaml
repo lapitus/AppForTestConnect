@@ -1,0 +1,21 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name:  app-for-test-connect-conf-app
+  labels:
+    app: app-for-test-connect-A
+    name: app-for-test-connect-conf-app
+data:
+  application.properties: |
+    ########################################
+    spring.jpa.hibernate.ddl-auto=create
+    spring.jpa.database-platform=org.hibernate.dialect.Oracle10gDialect
+    spring.datasource.url=jdbc:oracle:thin:@way4crd:1521/neon
+    spring.datasource.username=ows
+    spring.datasource.password=
+    spring.datasource.driver-class-name=oracle.jdbc.driver.OracleDriver
+    ## this shows the sql actions in the terminal logs
+    spring.jpa.show-sql=true
+    ##optional, but just in case another application is listening on your default  port (8080)
+    server.port=8080
+

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-for-test-connect-a-d
+  labels:
+    app: app-for-test-connect-a
+    name: app-for-test-connect-a-d
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-for-test-connect-a
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: 'true'
+      labels:
+        app:  app-for-test-connect-a
+        name: app-for-test-connect-a-p
+    spec:
+      containers:
+        - name: app-for-test-connect-a-c
+          image: registry.ca.sbrf.ru/pprb-dev/ci01006896/ci01006898_tcpf_dev/app-for-test-connect:2.0.0-SNAPSHOT  # вместо тега использовать хэш сумму SHA256
+          imagePullPolicy: Always
+          env:
+            - name: spring.config.location
+              value: /deployments/config/application.properties
+          securityContext:
+            capabilities:
+              drop:
+                - KILL
+                - MKNOD
+                - SETGID
+                - SETUID
+            runAsUser: 1002091000
+            allowPrivilegeEscalation: false # запрет использованя stuid
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          readinessProbe: # проверка, когда контейнер готов принимать прафик
+            httpGet:
+              path: /getStatus
+              port: 8080
+            initialDelaySeconds: 50 # задержка до начала проверки
+            timeoutSeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3 # количество попыток
+          livenessProbe: # проверка, когда необходимо перезапустить контейнер
+            httpGet:
+              path: /getDual
+              port: 8080
+            initialDelaySeconds: 50
+            timeoutSeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3 # количество попыток
+          volumeMounts:
+            - mountPath: /deployments/config
+              name: app-for-test-connect-a-v
+              readOnly: true
+          ports:
+            - name: connect-http-a
+              containerPort: 8080
+              protocol: TCP
+      volumes:
+        - name: app-for-test-connect-a-v
+          configMap:
+            name: app-for-test-connect-conf-app
+
+

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { .Values.test_app.spec.name } }-a-d
+  labels:
+    app: { { .Values.test_app.spec.name } }-a
+    name: { { .Values.test_app.spec.name } }-a-d
+spec:
+  selector:
+    matchLabels:
+      app: { { .Values.test_app.spec.name } }-a
+  template:
+    metadata:
+      labels:
+        app:  { { .Values.test_app.spec.name } }-a
+        name: { { .Values.test_app.spec.name } }-a-p
+    spec:
+      containers:
+          - name: { { .Values.test_app.spec.name } }-a-c
+            image: { { .Values.test_app.spec.image } }
+            imagePullPolicy: Always
+            { { - if .Values.test_app.spec.livenessProbe } }
+            resources:
+{ { toYaml .Values.test_app.spec.resources | indent 12 } }
+            { { - end } }
+            { { - if .Values.test_app.spec.livenessProbe } }
+            livenessProbe:
+{ { toYaml .Values.test_app.spec.livenessProbe | indent 12 } }
+            { { - end } }
+
+            { { - if .Values.test_app.spec.livenessProbe } }
+            readinessProbe:
+{ { toYaml .Values.test_app.spec.readinessProbe | indent 12 } }
+            { { - end } }
+
+    volumeMounts:
+      - mountPath: { { .Values.test_app.spec.mountPath } }
+        name: { { .Values.test_app.spec.name } }-a-v
+        readOnly: true
+
+    ports:
+      - name: { { .Values.test_app.spec.ports.name } }
+        containerPort: { { .Values.test_app.spec.ports.containerPort } }
+        protocol: { { .Values.test_app.spec.ports.protocol } }
+    volumes:
+      - name: { { .Values.test_app.spec.name } }-a-v
+        configMap:
+          name: { { .Values.test_app.spec.name } }-conf-app
+
+

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#service-v1-core
+metadata:
+  name: app-for-test-connect-svc-ext
+
+spec:
+  type: ExternalName
+  externalName: hawk05-way4crd-scan.ca.sbrf.ru
+  selector:
+    app: app-for-test-connect

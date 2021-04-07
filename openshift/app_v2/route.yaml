@@ -1,0 +1,18 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: app-for-test-connect-route
+#  annotations:
+#    haproxy.router.openshift.io/balance: leastconn
+  labels:
+    app: app-for-test-connect-route
+spec:
+  host: route-ci00058876.apps.sh1.dev-gen1-ds.ca.sbrf.ru
+  to:
+    kind: Service
+    name: app-for-test-connect-svc-a
+    weight: 50
+  alternateBackends:
+  - kind: Service
+    name: app-for-test-connect-svc-b
+    weight: 50

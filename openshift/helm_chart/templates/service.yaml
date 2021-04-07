@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#service-v1-core
+metadata:
+  name: { { .Values.test_app.spec.name } }-svc-a
+  labels:
+    app: { { .Values.test_app.spec.name } }-svc-a
+    
+spec:
+  type: ClusterIP
+  ports:
+    - port: { { .Values.test_app.service.ports } }
+      targetPort: { { .Values.test_app.service.targetPort } }
+      protocol: { { .Values.test_app.service.protocol } }
+      name: { { .Values.test_app.spec.ports.name } }
+
+  selector:
+    app: { { .Values.test_app.spec.name } }-a

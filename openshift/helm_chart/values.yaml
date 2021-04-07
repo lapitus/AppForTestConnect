@@ -1,0 +1,50 @@
+# Default values for mychart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+test_app:
+  spec:
+    name: app-for-test-connect
+    image: registry.ca.sbrf.ru/pprb-dev/ci01006896/ci01006898_tcpf_dev/app-for-test-connect:2.0.0-SNAPSHOT
+
+    livenessProbe: # проверка, когда необходимо перезапустить контейнер
+      httpGet:
+        path: /getDual
+        port: 8080
+      initialDelaySeconds: 50
+      timeoutSeconds: 3
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3 # количество попыток
+    readinessProbe: # проверка, когда контейнер готов принимать прафик
+      httpGet:
+        path: /getStatus
+        port: 8080
+      initialDelaySeconds: 50 # задержка до начала проверки
+      timeoutSeconds: 10
+      periodSeconds: 5
+      successThreshold: 1
+      failureThreshold: 3 # количество попыток
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    ports:
+      - name: connect-http-a
+        containerPort: 8080
+        protocol: TCP
+    volumeMounts:
+      - mountPath: /deployments/config
+
+  route:
+    host: route-ci00058876.apps.sh1.dev-gen.ca.sbrf.ru
+
+  service:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: app-for-test-connect-service

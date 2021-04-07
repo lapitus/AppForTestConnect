@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Endpoints # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#service-v1-core
+metadata:
+  name: app-for-test-connect-svc-db
+  labels:
+    app: app-for-test-connect-svc
+  selector:
+    app: app-for-test-connect
+subsets:
+  - adresses:
+      - ip: 10.116.127.220
+  - ports:
+      - port: 1521
