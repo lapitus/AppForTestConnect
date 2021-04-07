@@ -1,1 +1,2 @@
 # AppForTestConnect
+For OpenShift tests
